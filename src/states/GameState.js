@@ -109,6 +109,7 @@ class GameState extends Phaser.State {
 		{
 			//TODO Asteroids in own class + asteroid factory
 			let position = this.findViableAsteroidPosition()
+			let asteroid = this.asteroids.getFirstExists(false, true, position.x, position.y, 'asteroid');
 			asteroid.body.velocity.set((Math.random() - 0.5) * 50, (Math.random() - 0.5) * 50);
 			asteroid.body.angularVelocity = Math.random() * 10;
 			asteroid.size = 3;
