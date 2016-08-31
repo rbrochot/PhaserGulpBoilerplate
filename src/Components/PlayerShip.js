@@ -1,6 +1,7 @@
 import * as Phaser from 'Phaser';
 
 //TODO Use DI for game, keyboard, and groups
+//TODO Ship reactor particles
 class PlayerShip extends Phaser.Sprite {
 	constructor(game, keyboard, bullets) {
 		super(game, 0, 0, 'ship');
