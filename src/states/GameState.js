@@ -10,7 +10,6 @@ class GameState extends Phaser.State {
 		this.ship;
 		this.keyboard;
 		this.gameOver = false;
-		this.bulletTime = 0;
 	}
 
 	preload() {
@@ -20,34 +19,21 @@ class GameState extends Phaser.State {
 	}
 
 	create() {
-		// this.ship = this.game.add.sprite(0, 0, 'ship');
-		this.ship = new PlayerShip(this.game);
-		// this.ship.scale.set(0.5);
-		// this.ship.anchor.set(0.5);
-		// this.game.physics.arcade.enable(this.ship);
-		// this.ship.body.maxVelocity = 100;
-
-		this.asteroids = this.game.add.group();
-		this.asteroids.enableBody = true;
-		//TODO check if bounce is mandatory
-		// this.asteroids.body.bounce.set(1);
-		// this.asteroids.body.collideWorldBounds = true;
+		this.keyboard = this.game.input.keyboard.createCursorKeys();
+		this.keyboard.space = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
 		this.bullets = this.game.add.group();
 		this.bullets.enableBody = true;
 
-		this.starEmitter = this.game.add.emitter(0, 0, 20);
-		this.starEmitter.makeParticles('star');
-		this.starEmitter.minParticleScale = 0.1;
-		this.starEmitter.maxParticleScale = 0.2;
+		this.ship = new PlayerShip(this.game, this.keyboard, this.bullets);
+
+		this.asteroids = this.game.add.group();
+		this.asteroids.enableBody = true;
 
 		this.rockEmitter = this.game.add.emitter(0, 0, 50);
 		this.rockEmitter.makeParticles('asteroid');
 		this.rockEmitter.minParticleScale = 0.05;
 		this.rockEmitter.maxParticleScale = 0.1;
-
-		this.keyboard = this.game.input.keyboard.createCursorKeys();
-		this.keyboard.space = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
 		this.startNextLevel();
 	}
@@ -60,49 +46,10 @@ class GameState extends Phaser.State {
 			this.startNextLevel();
 		}
 
-		if (!this.gameOver) {
-			//Rotation
-			if (this.keyboard.left.isDown)
-			{
-				this.ship.rotation -= 0.1;
-			}
-			if (this.keyboard.right.isDown)
-			{
-				this.ship.rotation += 0.1;
-			}
-
-			//Velocity
-			if (this.keyboard.up.isDown)
-			{
-				let velocityDelta;
-				velocityDelta = this.game.physics.arcade.velocityFromRotation(this.ship.rotation, 5);
-				this.ship.body.velocity.add(velocityDelta.x, velocityDelta.y);
-			}
-			else if (this.keyboard.down.isDown)
-			{
-				let velocityDelta = this.game.physics.arcade.velocityFromRotation(this.ship.rotation, -5);
-				this.ship.body.velocity.add(velocityDelta.x, velocityDelta.y);
-			}
-
-			//Shoot
-			if (this.keyboard.space.isDown && this.game.time.now > this.bulletTime) {
-				this.bulletTime = this.game.time.now + 500;
-				let bullet = this.bullets.getFirstExists(false, true, this.ship.x, this.ship.y, 'bullet');
-				bullet.rotation = this.ship.rotation;
-				bullet.anchor.set(0.5);
-				bullet.lifespan = 3000;
-				this.game.physics.arcade.velocityFromRotation(this.ship.rotation, 150, bullet.body.velocity);
-			}
-		}
+		this.ship.update();
 
 		//Collision detection
-		//TODO collide asteroids?
-		// this.game.physics.arcade.collide(this.asteroids, this.asteroids);
 		this.game.physics.arcade.overlap(this.ship, this.asteroids, function(ship, asteroid) {
-			this.starEmitter.x = ship.x + ship.width / 2;
-			this.starEmitter.y = ship.y + ship.height / 2;
-			this.starEmitter.start(true, 500, null, 10);
-
 			this.ship.kill();
 			this.gameOver = true;
 		}, null, this);
@@ -138,11 +85,9 @@ class GameState extends Phaser.State {
 
 		//World-wrap
 		this.game.world.wrap(this.ship, 0, true);
-		// this.game.world.wrap(this.asteroids, 0, true);
 		this.asteroids.forEach(function (asteroid) {
 			this.game.world.wrap(asteroid, 0, true);
 		}, this);
-		// this.game.world.wrap(this.bullets, 0, true);
 		this.bullets.forEach(function (bullet) {
 			this.game.world.wrap(bullet, 0, true);
 		}, this);
@@ -177,11 +122,11 @@ class GameState extends Phaser.State {
 		}, this);
 
 		//Revive, center ship & set velocity to 0
-		this.ship.reset(400 - this.ship.width, 300 - this.ship.height);
-		this.ship.body.velocity.set(0);
+		this.ship.reset();
 	}
 }
 
+//TODO dependancy injection for "services": keyboard, factories, shared emitters (and maybe not shared, via not singleton dependancy injection), etc.
 //TODO Fading particles
 //TODO Ship reactor particles
 //TODO Better asteroids spawns
