@@ -1,5 +1,6 @@
 import * as Phaser from 'Phaser';
 import PlayerShip from '../Components/PlayerShip';
+import AsteroidFactory from '../Components/AsteroidFactory';
 
 class GameState extends Phaser.State {
 
@@ -25,17 +26,11 @@ class GameState extends Phaser.State {
 		this.bullets = this.game.add.group();
 		this.bullets.enableBody = true;
 		this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
-
 		this.ship = new PlayerShip(this.game, this.keyboard, this.bullets);
 
-		this.asteroids = this.game.add.group();
-		this.asteroids.enableBody = true;
-		this.asteroids.physicsBodyType = Phaser.Physics.ARCADE;
-
-		this.rockEmitter = this.game.add.emitter(0, 0, 50);
-		this.rockEmitter.makeParticles('asteroid');
-		this.rockEmitter.minParticleScale = 0.05;
-		this.rockEmitter.maxParticleScale = 0.1;
+		// this.asteroidFactory = AsteroidFactory.newInstance(); //TODO as singleton
+		this.asteroidFactory = new AsteroidFactory(this.game);
+		this.asteroids = this.asteroidFactory.getAsteroids();
 
 		this.startNextLevel();
 	}
@@ -59,27 +54,8 @@ class GameState extends Phaser.State {
 			if (!bullet.alive || !asteroid.alive) {return;}
 			this.score += 100;
 
-			//TODO All this in asteroid.kill override
-			this.rockEmitter.x = asteroid.centerX;
-			this.rockEmitter.y = asteroid.centerY;
-			this.rockEmitter.start(true, 500, null, 5 * asteroid.size);
-
-			//Spawn lesser asteroids if asteroid size > 1
-			if (asteroid.size > 1) {
-				for (var i = 0; i < 3; i++)
-				{
-					let newAsteroid = this.asteroids.getFirstExists(false, true, asteroid.centerX, asteroid.centerY, 'asteroid');
-					newAsteroid.body.velocity.set((Math.random() - 0.5) * 50, (Math.random() - 0.5) * 50);
-					newAsteroid.body.angularVelocity = Math.random() * 10;
-					newAsteroid.size = asteroid.size - 1;
-					newAsteroid.anchor.set(0.5);
-					newAsteroid.scale.set(newAsteroid.size / 3);
-				}
-			}
-			//TODO END asteroid.kill
-
+			this.asteroidFactory.killAsteroid(asteroid);
 			bullet.kill();
-			asteroid.kill();
 
 			//Check alive asteroids, and pass to next level
 			if (this.asteroids.getFirstAlive(false) === null) {
@@ -107,26 +83,8 @@ class GameState extends Phaser.State {
 		this.level++;
 		for (var i = 0; i < this.level; i++)
 		{
-			//TODO Asteroids in own class + asteroid factory
-			let position = this.findViableAsteroidPosition()
-			let asteroid = this.asteroids.getFirstExists(false, true, position.x, position.y, 'asteroid');
-			asteroid.body.velocity.set((Math.random() - 0.5) * 50, (Math.random() - 0.5) * 50);
-			asteroid.body.angularVelocity = Math.random() * 10;
-			asteroid.size = 3;
-			asteroid.anchor.set(0.5);
-			asteroid.scale.set(1);
+			this.asteroidFactory.createAsteroid();
 		}
-	}
-
-	findViableAsteroidPosition() {
-		//TODO Booooo ugly
-		let position = {};
-		do {
-			position.x = Math.random() * 800;
-			position.y = Math.random() * 600;
-		}
-		while (position.x > 200 && position.x < 500 && position.y > 100 && position.y < 400 );
-		return position;
 	}
 
 	clean() {
@@ -147,5 +105,6 @@ class GameState extends Phaser.State {
 //TODO Fading particles
 //TODO Get real exemple sprites from phaser.io
 //TODO ES6 the shit out of it || with classes, modules and other badasseries :)
+//TODO JSHint and JSCS in build!
 
 export default GameState;
