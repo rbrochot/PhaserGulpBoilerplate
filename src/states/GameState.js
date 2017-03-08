@@ -20,6 +20,8 @@ class GameState extends Phaser.State {
 	}
 
 	create() {
+		// this.entities = {};
+		// this.entities.myEntity = new Entity(this.game, this.entities);
 		this.keyboard = this.game.input.keyboard.createCursorKeys();
 		this.keyboard.space = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
@@ -28,7 +30,6 @@ class GameState extends Phaser.State {
 		this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
 		this.ship = new PlayerShip(this.game, this.keyboard, this.bullets);
 
-		// this.asteroidFactory = AsteroidFactory.newInstance(); //TODO as singleton
 		this.asteroidFactory = new AsteroidFactory(this.game);
 		this.asteroids = this.asteroidFactory.getAsteroids();
 
@@ -81,7 +82,7 @@ class GameState extends Phaser.State {
 	startNextLevel() {
 		this.clean();
 		this.level++;
-		for (var i = 0; i < this.level; i++)
+		for (var i = 0; i < this.level ; i++)
 		{
 			this.asteroidFactory.createAsteroid();
 		}
@@ -101,10 +102,19 @@ class GameState extends Phaser.State {
 	}
 }
 
+//GAME
+//========
 //TODO dependancy injection for "services": keyboard, factories, shared emitters (and maybe not shared, via not singleton dependancy injection), etc.
+// => no DI, just shared objects (DI would be such a mess with states management)
 //TODO Fading particles
 //TODO Get real exemple sprites from phaser.io
+// OR my own graphics
 //TODO ES6 the shit out of it || with classes, modules and other badasseries :)
+
+//BUILD
+//========
 //TODO JSHint and JSCS in build!
+//TODO Why is phaser in game.js ?
+//TODO Make libs integration dynamic: list of dependencies and injection in HTML (CSS too)
 
 export default GameState;

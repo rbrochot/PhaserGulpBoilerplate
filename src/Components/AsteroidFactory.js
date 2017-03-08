@@ -1,7 +1,10 @@
-import * as Phaser from 'Phaser';
+import {
+	Point,
+	Physics
+} from 'Phaser';
+// import random from 'Math';
 
-//TODO Should be a singleton with setable "game" property
-//TODO Should only be a factory, and have kill method (and static emitter) in asteroid class,
+// Should only be a factory, and have kill method (and static emitter) in asteroid class,
 //	but it seems overkill in this case...
 class AsteroidFactory {
 	constructor(game) {
@@ -9,7 +12,7 @@ class AsteroidFactory {
 
 		this.asteroids = this.game.add.group();
 		this.asteroids.enableBody = true;
-		this.asteroids.physicsBodyType = Phaser.Physics.ARCADE;
+		this.asteroids.physicsBodyType = Physics.ARCADE;
 
 		this.rockEmitter = this.game.add.emitter(0, 0, 50);
 		this.rockEmitter.makeParticles('asteroid');
@@ -42,10 +45,14 @@ class AsteroidFactory {
 		asteroid.kill();
 	}
 
-	createAsteroid({
-		size = 3,
-		position = this._findViableAsteroidPosition()
-	} = {}) {
+	createAsteroid({size, position} = {}) {
+		if (_.isUndefined(size)) {
+			size = 3;
+		}
+		if (_.isUndefined(position)) {
+			position = this.findViableAsteroidPosition();
+		}
+
 		let asteroid = this.asteroids.getFirstExists(false, true, position.x, position.y, 'asteroid');
 		asteroid.body.velocity.set((Math.random() - 0.5) * 50, (Math.random() - 0.5) * 50);
 		asteroid.body.angularVelocity = Math.random() * 10;
@@ -55,14 +62,14 @@ class AsteroidFactory {
 		return asteroid;
 	}
 
-	_findViableAsteroidPosition() {
-		//TODO Booooo ugly
-		let position = {};
+	findViableAsteroidPosition() {
+		let center = new Point(400, 300);
+		let position = new Point();
 		do {
 			position.x = Math.random() * 800;
 			position.y = Math.random() * 600;
 		}
-		while (position.x > 200 && position.x < 500 && position.y > 100 && position.y < 400);
+		while (Point.distance(center, position) < 200);
 		return position;
 	}
 }

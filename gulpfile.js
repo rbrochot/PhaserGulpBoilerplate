@@ -10,21 +10,48 @@ var exorcist = require('exorcist');
 var babelify = require('babelify');
 var browserify = require('browserify');
 var browserSync = require('browser-sync');
+var fs = require('fs');
+var _ = require('underscore');
 
 /**
  * Using different folders/file names? Change these constants:
  */
-var PHASER_PATH = './node_modules/phaser/build/';
+var LIBS_PATH = './node_modules/';
+var PHASER_PATH = LIBS_PATH + 'phaser/build/';
 var BUILD_PATH = './build';
 var SCRIPTS_PATH = BUILD_PATH + '/scripts';
 var SOURCE_PATH = './src';
 var STATIC_PATH = './static';
 var ENTRY_FILE = SOURCE_PATH + '/index.js';
 var OUTPUT_FILE = 'game.js';
+var options = {
+	dir: {
+		LIBS_PATH: './node_modules/',
+		PHASER_PATH: LIBS_PATH + 'phaser/build/',
+		BUILD_PATH: './build',
+		SCRIPTS_PATH: BUILD_PATH + '/scripts',
+		SOURCE_PATH: './src',
+		STATIC_PATH: './static',
+		ENTRY_FILE: SOURCE_PATH + '/index.js',
+		OUTPUT_FILE: 'game.js',
+		TASK_DIRECTORY: './gulp_tasks',
+	},
+	isProduction: function () {
+		return argv.production;
+	}
+};
 
-function isProduction() {
-	// Easier to modify in the future.
-	return argv.production;
+fs.readdirSync(options.dir.TASK_DIRECTORY).filter(_filterFilename).map(_requireGulpFile);
+
+function _filterFilename(file) {
+	return (/\.(js)$/i).test(file);
+}
+
+function _requireGulpFile(file) {
+	var required = module.require(options.dir.TASK_DIRECTORY + '/' + file);
+	if (_.isFunction(required)) {
+		required(options);
+	}
 }
 
 /**
@@ -47,11 +74,11 @@ gulp.task('copyStatic', ['cleanBuild'], function() {
  * Copies required Phaser files from the './node_modules/Phaser' folder into the './build/scripts' folder.
  * This way you can call 'npm update', get the lastest Phaser version and use it on your project with ease.
  */
-gulp.task('copyPhaser', ['copyStatic'], function() {
+gulp.task('copyPhaser', ['copyStatic', 'copyLibs'], function() {
 
 	var srcList = ['phaser.min.js'];
 
-	if (!isProduction()) {
+	if (!options.isProduction()) {
 		srcList.push('phaser.map', 'phaser.js');
 	}
 
@@ -72,7 +99,7 @@ gulp.task('build', ['copyPhaser'], function () {
 
 	var sourcemapPath = SCRIPTS_PATH + '/' + OUTPUT_FILE + '.map';
 
-	if (isProduction()) {
+	if (options.isProduction()) {
 		gutil.log(gutil.colors.green('Running production build...'));
 	} else {
 		gutil.log(gutil.colors.yellow('Running development build...'));
@@ -87,35 +114,13 @@ gulp.task('build', ['copyPhaser'], function () {
 			gutil.log(gutil.colors.red('[Build Error]', error.message));
 			this.emit('end');
 		})
-		.pipe(gulpif(!isProduction(), exorcist(sourcemapPath)))
+		.pipe(gulpif(!options.isProduction(), exorcist(sourcemapPath)))
 		.pipe(source(OUTPUT_FILE))
 		.pipe(buffer())
-		.pipe(gulpif(isProduction(), uglify()))
+		.pipe(gulpif(options.isProduction(), uglify()))
 		.pipe(gulp.dest(SCRIPTS_PATH));
 
 });
-
-/**
- * Starts the Browsersync server.
- * Watches for file changes in the 'src' folder.
- */
-gulp.task('serve', ['build'], function() {
-
-	browserSync({
-		server: {
-			baseDir: BUILD_PATH
-		},
-		open: true
-	});
-
-	gulp.watch(SOURCE_PATH + '/**/*.js', ['watch-js']);
-
-});
-
-/**
- * Rebuilds and reloads the project when executed.
- */
-gulp.task('watch-js', ['build'], browserSync.reload);
 
 /**
  * The tasks are executed in the following order:

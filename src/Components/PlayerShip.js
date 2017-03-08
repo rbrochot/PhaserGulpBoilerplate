@@ -1,8 +1,8 @@
-import * as Phaser from 'Phaser';
+import {Sprite} from 'Phaser';
 
 //TODO Use DI for game, keyboard, and groups
 //TODO Ship reactor particles
-class PlayerShip extends Phaser.Sprite {
+class PlayerShip extends Sprite {
 	constructor(game, keyboard, bullets) {
 		super(game, 0, 0, 'ship');
 		this.scale.set(0.5);
