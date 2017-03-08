@@ -15,7 +15,7 @@ class AsteroidFactory {
 		this.asteroids.physicsBodyType = Physics.ARCADE;
 
 		this.rockEmitter = this.game.add.emitter(0, 0, 50);
-		this.rockEmitter.makeParticles('asteroid');
+		this.rockEmitter.makeParticles('asteroid-s');
 		this.rockEmitter.minParticleScale = 0.05;
 		this.rockEmitter.maxParticleScale = 0.1;
 	}

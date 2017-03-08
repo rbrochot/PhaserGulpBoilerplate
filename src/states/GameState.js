@@ -14,8 +14,10 @@ class GameState extends Phaser.State {
 	}
 
 	preload() {
-		this.game.load.image('ship', '/images/ship.png');
-		this.game.load.image('asteroid', '/images/asteroid.png');
+		this.game.load.image('ship', '/images/spaceArt/png/player.png');
+		this.game.load.image('asteroid', '/images/spaceArt/png/meteorBig.png');
+		this.game.load.image('asteroid-s', '/images/spaceArt/png/meteorSmall.png');
+		this.game.load.image('laser', '/images/spaceArt/png/laserGreen.png');
 		this.game.load.image('star', '/images/star.png');
 	}
 

@@ -28,34 +28,34 @@ class PlayerShip extends Sprite {
 			//Rotation
 			if (this.keyboard.left.isDown)
 			{
-				this.rotation -= 0.1;
+				this.angle -= 3;
 			}
 			if (this.keyboard.right.isDown)
 			{
-				this.rotation += 0.1;
+				this.angle += 3;
 			}
 
 			//Velocity
 			if (this.keyboard.up.isDown)
 			{
 				let velocityDelta;
-				velocityDelta = this.game.physics.arcade.velocityFromRotation(this.rotation, 5);
+				velocityDelta = this.game.physics.arcade.velocityFromAngle(this.angle - 90, 5);
 				this.body.velocity.add(velocityDelta.x, velocityDelta.y);
 			}
 			else if (this.keyboard.down.isDown)
 			{
-				let velocityDelta = this.game.physics.arcade.velocityFromRotation(this.rotation, -5);
+				let velocityDelta = this.game.physics.arcade.velocityFromAngle(this.angle - 90, -5);
 				this.body.velocity.add(velocityDelta.x, velocityDelta.y);
 			}
 
 			//Shoot
 			if (this.keyboard.space.isDown && this.game.time.now > this.bulletTime) {
 				this.bulletTime = this.game.time.now + 500;
-				let bullet = this.bullets.getFirstExists(false, true, this.x, this.y, 'bullet');
-				bullet.rotation = this.rotation;
+				let bullet = this.bullets.getFirstExists(false, true, this.x, this.y, 'laser');
+				bullet.angle = this.angle;
 				bullet.anchor.set(0.5);
 				bullet.lifespan = 3000;
-				this.game.physics.arcade.velocityFromRotation(this.rotation, 350, bullet.body.velocity);
+				this.game.physics.arcade.velocityFromAngle(this.angle - 90, 350, bullet.body.velocity);
 				bullet.body.velocity.add(this.body.velocity.x, this.body.velocity.y);
 			}
 		}
