@@ -8,7 +8,7 @@ class PlayerShip extends Sprite {
 		this.scale.set(0.5);
 		this.anchor.set(0.5);
 		game.physics.arcade.enable(this);
-		this.body.maxVelocity.set(300);
+		this.body.maxVelocity.set(250);
 
 		this.keyboard = keyboard;
 		this.bullets = bullets;
@@ -55,7 +55,7 @@ class PlayerShip extends Sprite {
 				bullet.angle = this.angle;
 				bullet.anchor.set(0.5);
 				bullet.lifespan = 3000;
-				this.game.physics.arcade.velocityFromAngle(this.angle - 90, 350, bullet.body.velocity);
+				this.game.physics.arcade.velocityFromAngle(this.angle - 90, 400, bullet.body.velocity);
 				bullet.body.velocity.add(this.body.velocity.x, this.body.velocity.y);
 			}
 		}

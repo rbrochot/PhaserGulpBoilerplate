@@ -18,10 +18,13 @@ class GameState extends Phaser.State {
 		this.game.load.image('asteroid', '/images/spaceArt/png/meteorBig.png');
 		this.game.load.image('asteroid-s', '/images/spaceArt/png/meteorSmall.png');
 		this.game.load.image('laser', '/images/spaceArt/png/laserGreen.png');
+		this.game.load.image('laser-impact', '/images/spaceArt/png/laserGreenShot.png');
 		this.game.load.image('star', '/images/star.png');
+		this.game.load.image('background', '/images/spaceArt/png/Background/starBackground.png');
 	}
 
 	create() {
+		this.backgroundSprite = this.game.add.tileSprite(0, 0, 800, 600, 'background');
 		// this.entities = {};
 		// this.entities.myEntity = new Entity(this.game, this.entities);
 		this.keyboard = this.game.input.keyboard.createCursorKeys();
