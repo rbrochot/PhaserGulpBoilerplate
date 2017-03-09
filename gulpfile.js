@@ -1,45 +1,25 @@
-var del = require('del');
 var gulp = require('gulp');
 var argv = require('yargs').argv;
-var gutil = require('gulp-util');
-var source = require('vinyl-source-stream');
-var buffer = require('gulp-buffer');
-var uglify = require('gulp-uglify');
-var gulpif = require('gulp-if');
-var exorcist = require('exorcist');
-var babelify = require('babelify');
-var browserify = require('browserify');
-var browserSync = require('browser-sync');
 var fs = require('fs');
 var _ = require('underscore');
 
-/**
- * Using different folders/file names? Change these constants:
- */
-var LIBS_PATH = './node_modules/';
-var PHASER_PATH = LIBS_PATH + 'phaser/build/';
-var BUILD_PATH = './build';
-var SCRIPTS_PATH = BUILD_PATH + '/scripts';
-var SOURCE_PATH = './src';
-var STATIC_PATH = './static';
-var ENTRY_FILE = SOURCE_PATH + '/index.js';
-var OUTPUT_FILE = 'game.js';
 var options = {
 	dir: {
 		LIBS_PATH: './node_modules/',
-		PHASER_PATH: LIBS_PATH + 'phaser/build/',
 		BUILD_PATH: './build',
-		SCRIPTS_PATH: BUILD_PATH + '/scripts',
 		SOURCE_PATH: './src',
 		STATIC_PATH: './static',
-		ENTRY_FILE: SOURCE_PATH + '/index.js',
 		OUTPUT_FILE: 'game.js',
 		TASK_DIRECTORY: './gulp_tasks',
+		SCRIPTS_PATH: '',
+		ENTRY_FILE: '',
 	},
 	isProduction: function () {
 		return argv.production;
 	}
 };
+options.dir.SCRIPTS_PATH = options.dir.BUILD_PATH + '/scripts';
+options.dir.ENTRY_FILE = options.dir.SOURCE_PATH + '/index.js';
 
 fs.readdirSync(options.dir.TASK_DIRECTORY).filter(_filterFilename).map(_requireGulpFile);
 
@@ -55,78 +35,7 @@ function _requireGulpFile(file) {
 }
 
 /**
- * Deletes all content inside the './build' folder.
- */
-gulp.task('cleanBuild', function() {
-	del(['build/**/*.*']);
-});
-
-/**
- * Copies the content of the './static' folder into the '/build' folder.
- * Check out README.md for more info on the '/static' folder.
- */
-gulp.task('copyStatic', ['cleanBuild'], function() {
-	return gulp.src(STATIC_PATH + '/**/*')
-		.pipe(gulp.dest(BUILD_PATH));
-});
-
-/**
- * Copies required Phaser files from the './node_modules/Phaser' folder into the './build/scripts' folder.
- * This way you can call 'npm update', get the lastest Phaser version and use it on your project with ease.
- */
-gulp.task('copyPhaser', ['copyStatic', 'copyLibs'], function() {
-
-	var srcList = ['phaser.min.js'];
-
-	if (!options.isProduction()) {
-		srcList.push('phaser.map', 'phaser.js');
-	}
-
-	srcList = srcList.map(function(file) {
-		return PHASER_PATH + file;
-	});
-
-	return gulp.src(srcList)
-		.pipe(gulp.dest(SCRIPTS_PATH));
-
-});
-
-/**
- * Transforms ES2015 code into ES5 code.
- * Optionally: Creates a sourcemap file 'game.js.map' for debugging.
- */
-gulp.task('build', ['copyPhaser'], function () {
-
-	var sourcemapPath = SCRIPTS_PATH + '/' + OUTPUT_FILE + '.map';
-
-	if (options.isProduction()) {
-		gutil.log(gutil.colors.green('Running production build...'));
-	} else {
-		gutil.log(gutil.colors.yellow('Running development build...'));
-	}
-
-	return browserify({
-		entries: ENTRY_FILE,
-		debug: true
-	})
-		.transform(babelify)
-		.bundle().on('error', function(error) {
-			gutil.log(gutil.colors.red('[Build Error]', error.message));
-			this.emit('end');
-		})
-		.pipe(gulpif(!options.isProduction(), exorcist(sourcemapPath)))
-		.pipe(source(OUTPUT_FILE))
-		.pipe(buffer())
-		.pipe(gulpif(options.isProduction(), uglify()))
-		.pipe(gulp.dest(SCRIPTS_PATH));
-
-});
-
-/**
  * The tasks are executed in the following order:
- * 'cleanBuild' -> 'copyStatic' -> 'copyPhaser' -> 'build' -> 'serve'
- *
- * Read more about task dependencies in Gulp:
- * https://medium.com/@dave_lunny/task-dependencies-in-gulp-b885c1ab48f0
+ * 'cleanBuild' -> 'copyStatic' -> 'copyLibs' -> 'build' -> (soon)'inject'-> 'serve'
  */
 gulp.task('default', ['serve']);

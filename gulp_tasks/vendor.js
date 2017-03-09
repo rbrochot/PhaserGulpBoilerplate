@@ -10,7 +10,7 @@
 		gulp.task('copyLibs', [], function() {
 
 			var srcList = [
-				options.dir.PHASER_PATH + 'phaser.min.js',
+				'phaser/build/phaser.min.js',
 				'underscore/underscore-min.js'
 			];
 
@@ -18,8 +18,8 @@
 				srcList.push(
 					'underscore/underscore-min.map',
 					'underscore/underscore.js',
-					options.dir.PHASER_PATH + 'phaser.map',
-					options.dir.PHASER_PATH + 'phaser.js'
+					'phaser/build/phaser.map',
+					'phaser/build/phaser.js'
 				);
 			}
 

@@ -107,19 +107,4 @@ class GameState extends Phaser.State {
 	}
 }
 
-//GAME
-//========
-//TODO dependancy injection for "services": keyboard, factories, shared emitters (and maybe not shared, via not singleton dependancy injection), etc.
-// => no DI, just shared objects (DI would be such a mess with states management)
-//TODO Fading particles
-//TODO Get real exemple sprites from phaser.io
-// OR my own graphics
-//TODO ES6 the shit out of it || with classes, modules and other badasseries :)
-
-//BUILD
-//========
-//TODO JSHint and JSCS in build!
-//TODO Why is phaser in game.js ?
-//TODO Make libs integration dynamic: list of dependencies and injection in HTML (CSS too)
-
 export default GameState;
