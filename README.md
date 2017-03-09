@@ -27,6 +27,10 @@ Thanks and credits:
 ========
  - dependency injection for "services": keyboard, factories, shared emitters (and maybe not shared, via not singleton dependency injection), etc. => no DI, just shared objects (DI would be such a mess with states management)
  - Fading particles
+ - Simple menu (start, game over)
+ - Use Phaser.Weapon?
+ - Sounds
+ - Add parallax faded nebulas
 
 ### BUILD
 ========

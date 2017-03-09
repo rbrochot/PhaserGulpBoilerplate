@@ -38,6 +38,13 @@ class GameState extends Phaser.State {
 		this.asteroidFactory = new AsteroidFactory(this.game);
 		this.asteroids = this.asteroidFactory.getAsteroids();
 
+		this.laserHitEmitter = this.game.add.emitter(0, 0, 1);
+		this.laserHitEmitter.makeParticles('laser-impact');
+		this.laserHitEmitter.setScale(0.5, 0.5);
+		this.laserHitEmitter.setRotation(1, 1);
+		this.laserHitEmitter.minParticleSpeed = 0;
+		this.laserHitEmitter.maxParticleSpeed = 0;
+
 		this.startNextLevel();
 	}
 
@@ -50,6 +57,8 @@ class GameState extends Phaser.State {
 		}
 
 		this.ship.update();
+		this.backgroundSprite.tilePosition.x += 0.2;
+		this.backgroundSprite.tilePosition.y += 0.2;
 
 		//Collision detection
 		this.game.physics.arcade.overlap(this.ship, this.asteroids, function(ship, asteroid) {
@@ -61,6 +70,12 @@ class GameState extends Phaser.State {
 			this.score += 100;
 
 			this.asteroidFactory.killAsteroid(asteroid);
+
+			//TODO find better laser impact
+			this.laserHitEmitter.x = bullet.centerX;
+			this.laserHitEmitter.y = bullet.centerY;
+			this.laserHitEmitter.angle = bullet.angle;
+			this.laserHitEmitter.start(true, 200, null, 1);
 			bullet.kill();
 
 			//Check alive asteroids, and pass to next level
