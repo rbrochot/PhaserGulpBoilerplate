@@ -8,7 +8,7 @@
 	var gulp = require('gulp');
 
 	module.exports = function (options) {
-		gulp.task('copyStatic', ['cleanBuild'], function() {
+		gulp.task('copyStatic', [], function() {
 			return gulp.src(options.dir.STATIC_PATH + '/**/*')
 				.pipe(gulp.dest(options.dir.BUILD_PATH));
 		});
