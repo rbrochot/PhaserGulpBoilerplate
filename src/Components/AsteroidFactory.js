@@ -1,8 +1,10 @@
 import {
 	Point,
-	Physics
+	Physics,
+	RandomDataGenerator,
 } from 'Phaser';
-// import random from 'Math';
+
+var RNG = new RandomDataGenerator();
 
 // Should only be a factory, and have kill method (and static emitter) in asteroid class,
 //	but it seems overkill in this case...
@@ -56,9 +58,10 @@ class AsteroidFactory {
 		}
 
 		let asteroid = this.asteroids.getFirstExists(false, true, position.x, position.y, 'asteroid');
-		asteroid.body.velocity.set((Math.random() - 0.5) * 50, (Math.random() - 0.5) * 50);
-		asteroid.body.angularVelocity = Math.random() * 10;
+		asteroid.body.velocity.set(RNG.realInRange(-25, 25), RNG.realInRange(-25, 25));
+		asteroid.body.angularVelocity = RNG.realInRange(0, 10);
 		asteroid.size = size;
+		asteroid.angle = RNG.angle();
 		asteroid.anchor.set(0.5);
 		asteroid.scale.set(size / 3);
 		return asteroid;
@@ -68,8 +71,8 @@ class AsteroidFactory {
 		let center = new Point(400, 300);
 		let position = new Point();
 		do {
-			position.x = Math.random() * 800;
-			position.y = Math.random() * 600;
+			position.x = RNG.between(0, this.game.width);
+			position.y = RNG.between(0, this.game.height);
 		}
 		while (Point.distance(center, position) < 200);
 		return position;

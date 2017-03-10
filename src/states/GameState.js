@@ -113,7 +113,7 @@ class GameState extends Phaser.State {
 		{
 			this.asteroidFactory.createAsteroid();
 		}
-		var nebulaCount = new Phaser.RandomDataGenerator().between(0, 3);
+		var nebulaCount = new Phaser.RandomDataGenerator().between(0, 20);
 		for (i = 0; i < nebulaCount ; i++)
 		{
 			this.nebulas.add(new Nebula(this.game));
