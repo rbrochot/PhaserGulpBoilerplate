@@ -16,7 +16,7 @@ Thanks and credits:
 
  - generic index.html with all JS (src + libs) and CSS dynamicaly injected
  - prod: 2 files: app.js & lib.js, all in a zip, and src-maps aside
- - dev: same with srcmap included? or independant files?
+ - dev: same with srcmap included? or independant files? => more like independant files, should be quicker to build
  - dev: watcher thats only compiles what's changed
 
 =========
