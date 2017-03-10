@@ -1,6 +1,7 @@
 import * as Phaser from 'Phaser';
 import PlayerShip from '../Components/PlayerShip';
 import AsteroidFactory from '../Components/AsteroidFactory';
+import Nebula from '../Components/Bg/Nebula';
 
 class GameState extends Phaser.State {
 
@@ -21,6 +22,7 @@ class GameState extends Phaser.State {
 		this.game.load.image('laser-impact', '/images/spaceArt/png/laserGreenShot.png');
 		this.game.load.image('star', '/images/star.png');
 		this.game.load.image('background', '/images/spaceArt/png/Background/starBackground.png');
+		this.game.load.image('nebula', '/images/spaceArt/png/Background/nebula.png');
 	}
 
 	create() {
@@ -30,6 +32,8 @@ class GameState extends Phaser.State {
 		this.keyboard = this.game.input.keyboard.createCursorKeys();
 		this.keyboard.space = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
+		this.nebulas = this.game.add.group();
+
 		this.bullets = this.game.add.group();
 		this.bullets.enableBody = true;
 		this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
@@ -38,12 +42,14 @@ class GameState extends Phaser.State {
 		this.asteroidFactory = new AsteroidFactory(this.game);
 		this.asteroids = this.asteroidFactory.getAsteroids();
 
-		this.laserHitEmitter = this.game.add.emitter(0, 0, 1);
-		this.laserHitEmitter.makeParticles('laser-impact');
-		this.laserHitEmitter.setScale(0.5, 0.5);
-		this.laserHitEmitter.setRotation(1, 1);
-		this.laserHitEmitter.minParticleSpeed = 0;
-		this.laserHitEmitter.maxParticleSpeed = 0;
+		// this.laserHitEmitter = this.game.add.emitter(0, 0, 1);
+		// this.laserHitEmitter.makeParticles('laser-impact');
+		// this.laserHitEmitter.setScale(0.5, 0.5);
+		// this.laserHitEmitter.setRotation(0, 0);
+		// this.laserHitEmitter.setAlpha(0.2, 1, 100, Phaser.Easing.Linear.None, false);
+		// this.laserHitEmitter.autoAlpha = true;
+		// this.laserHitEmitter.minParticleSpeed = 0;
+		// this.laserHitEmitter.maxParticleSpeed = 0;
 
 		this.startNextLevel();
 	}
@@ -72,10 +78,11 @@ class GameState extends Phaser.State {
 			this.asteroidFactory.killAsteroid(asteroid);
 
 			//TODO find better laser impact
-			this.laserHitEmitter.x = bullet.centerX;
-			this.laserHitEmitter.y = bullet.centerY;
-			this.laserHitEmitter.angle = bullet.angle;
-			this.laserHitEmitter.start(true, 200, null, 1);
+			// console.log('laser', bullet.centerX, bullet.centerY);
+			// this.laserHitEmitter.x = bullet.centerX;
+			// this.laserHitEmitter.y = bullet.centerY;
+			// this.laserHitEmitter.angle = bullet.angle;
+			// this.laserHitEmitter.start(true, 200, null, 1);
 			bullet.kill();
 
 			//Check alive asteroids, and pass to next level
@@ -106,6 +113,11 @@ class GameState extends Phaser.State {
 		{
 			this.asteroidFactory.createAsteroid();
 		}
+		var nebulaCount = new Phaser.RandomDataGenerator().between(0, 3);
+		for (i = 0; i < nebulaCount ; i++)
+		{
+			this.nebulas.add(new Nebula(this.game));
+		}
 	}
 
 	clean() {
@@ -116,6 +128,7 @@ class GameState extends Phaser.State {
 		this.bullets.forEach(function (bullet) {
 			bullet.kill();
 		}, this);
+		this.nebulas.removeAll(true);
 
 		//Revive, center ship & set velocity to 0
 		this.ship.reset();

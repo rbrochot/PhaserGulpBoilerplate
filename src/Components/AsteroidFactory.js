@@ -18,6 +18,8 @@ class AsteroidFactory {
 		this.rockEmitter.makeParticles('asteroid-s');
 		this.rockEmitter.minParticleScale = 0.05;
 		this.rockEmitter.maxParticleScale = 0.3;
+		this.rockEmitter.setAlpha(1, 0, 500);
+		this.rockEmitter.autoAlpha = true;
 	}
 
 	getAsteroids() {

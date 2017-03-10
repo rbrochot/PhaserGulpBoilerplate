@@ -1,4 +1,7 @@
-import {Sprite} from 'Phaser';
+import {
+	Sprite,
+	Easing,
+} from 'Phaser';
 
 //TODO Use DI for game, keyboard, and groups
 //TODO Ship reactor particles
@@ -19,6 +22,8 @@ class PlayerShip extends Sprite {
 		this.starEmitter.makeParticles('star');
 		this.starEmitter.minParticleScale = 0.1;
 		this.starEmitter.maxParticleScale = 0.2;
+		this.starEmitter.setAlpha(1, 0, 500);
+		this.starEmitter.autoAlpha = true;
 
 		game.stage.addChild(this);
 	}
