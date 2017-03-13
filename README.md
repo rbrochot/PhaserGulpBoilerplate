@@ -16,7 +16,8 @@ Thanks and credits:
 
  - generic index.html with all JS (src + libs) and CSS dynamicaly injected
  - prod: 2 files: app.js & lib.js, all in a zip, and src-maps aside
- - dev: same with srcmap included? or independant files? => more like independant files, should be quicker to build
+ - prod: ideally, keep libs as independent files (and get from CDN if possible)
+ - dev: same with srcmap included? or independent files? => more like independent files, should be quicker to build
  - dev: watcher thats only compiles what's changed
 
 =========
@@ -33,7 +34,7 @@ Thanks and credits:
 ### BUILD
 ========
  - Add JSHint and JSCS checks in build
- - Why is phaser in game.js ? and reorganise files output
+ - Why is phaser in game.js ? and reorganise files output => http://stackoverflow.com/questions/18169240/how-to-ignore-libraries-in-browserify-programmatic-api
  - Make libs integration dynamic: list of dependencies and injection in HTML (CSS too)
  - Dynamic watcher
  - Why watcher crashes 1/2 times?
