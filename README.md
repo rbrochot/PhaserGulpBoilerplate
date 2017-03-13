@@ -29,7 +29,6 @@ Thanks and credits:
  - Simple menu (start, game over)
  - Use Phaser.Weapon?
  - Sounds
- - Add parallax faded nebulas
 
 ### BUILD
 ========

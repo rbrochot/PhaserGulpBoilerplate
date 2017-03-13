@@ -3,6 +3,7 @@ import {
 	Physics,
 	RandomDataGenerator,
 } from 'Phaser';
+import _ from 'Underscore';
 
 var RNG = new RandomDataGenerator();
 
